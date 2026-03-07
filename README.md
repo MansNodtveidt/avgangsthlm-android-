@@ -106,26 +106,6 @@ in Stockholm public transit — directly on your home screen via a widget.
 
 *(add screenshots here)*
 
-## Setup
-
-1. Clone the project
-2. Open in Android Studio
-3. Get a free API key at [trafiklab.se](https://trafiklab.se)
-   - Add **ResRobot v2.1** to your project
-   - Add **Trafiklab Realtime APIs** to your project
-4. Create a `local.properties` file in the root folder with:
-
-```
-RESROBOT_API_KEY=your_key_here
-SL_REALTIME_API_KEY=your_key_here
-```
-
-5. Build and run the app on an Android device (API 26+)
-
-```bash
-./gradlew assembleDebug
-```
-
 ## Tech Stack
 
 | Component | Library |
