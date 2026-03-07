@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">AvgångSthlm</string>
+    <string name="widget_description">Visar nästa avgång från din favoritshållplats</string>
+    <string name="favorites_title">Favoriter</string>
+    <string name="auto_mode_title">Auto mode</string>
+    <string name="widget_preview_title">Förhandsvisning</string>
+    <string name="add_favorite_title">Ny favorit</string>
+    <string name="no_departures">Kunde inte hämta avgångar</string>
+    <string name="no_internet">Ingen internetanslutning</string>
+    <string name="next_departure">Nästa: </string>
+    <string name="then_departure">Sen: </string>
+    <string name="updated_at">Uppdaterad</string>
+    <string name="auto_mode_label">Läge: </string>
+    <string name="refresh">Uppdatera</string>
+</resources>
