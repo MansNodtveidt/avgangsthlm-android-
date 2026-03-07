@@ -16,7 +16,14 @@ i Stockholms kollektivtrafik – direkt på hemskärmen via en widget.
 
 ## Skärmdumpar
 
-*(lägg till skärmdumpar här)*
+<div align="center">
+<img src="screenshots/1000008465.jpg" width="200"/>
+<img src="screenshots/1000008467.jpg" width="200"/>
+<img src="screenshots/1000008469.jpg" width="200"/>
+<img src="screenshots/1000008471.jpg" width="200"/>
+<img src="screenshots/1000008473.jpg" width="200"/>
+<img src="screenshots/1000008475.jpg" width="200"/>
+</div>
 
 ## Projektstruktur
 
