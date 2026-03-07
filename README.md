@@ -18,26 +18,6 @@ i Stockholms kollektivtrafik – direkt på hemskärmen via en widget.
 
 *(lägg till skärmdumpar här)*
 
-## Installation
-
-1. Klona projektet
-2. Öppna i Android Studio
-3. Skaffa en gratis API-nyckel på [trafiklab.se](https://trafiklab.se)
-   - Lägg till **ResRobot v2.1** i ditt projekt
-   - Lägg till **Trafiklab Realtime APIs** i ditt projekt
-4. Skapa en `local.properties`-fil i rotmappen med:
-
-```
-RESROBOT_API_KEY=6eb8aae3-a1da-4eb4-9c16-35c1de97491f
-SL_REALTIME_API_KEY=47e07a5bcd5145c99b8cb20253ca48de
-```
-
-5. Bygg och kör appen på en Android-enhet (API 26+)
-
-```bash
-./gradlew assembleDebug
-```
-
 ## Projektstruktur
 
 ```
