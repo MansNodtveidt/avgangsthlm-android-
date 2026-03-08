@@ -152,3 +152,9 @@ via Trafiklab to fetch departures and search for stops.
 Departure data is provided by [Trafiklab](https://trafiklab.se) /
 [ResRobot](https://www.trafiklab.se/api/trafiklab-apis/resrobot-v21/).
 This project is not affiliated with or endorsed by SL or Region Stockholm.
+
+## Integritetspolicy / Privacy Policy
+
+[Svenska] [Integritetspolicy](https://www.termsfeed.com/live/7d2eb7a2-1852-4594-b4d9-475501006f21)
+
+[English] [Privacy Policy](https://www.termsfeed.com/live/7d2eb7a2-1852-4594-b4d9-475501006f21)
