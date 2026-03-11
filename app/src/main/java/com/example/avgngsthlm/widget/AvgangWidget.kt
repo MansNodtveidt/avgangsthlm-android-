@@ -21,6 +21,7 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.example.avgngsthlm.MainActivity
 import com.example.avgngsthlm.R
+import com.example.avgngsthlm.util.cleanStopName
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -30,6 +31,7 @@ private val colorSurface = ColorProvider(R.color.widget_surface)
 private val colorOnSurface = ColorProvider(R.color.widget_on_surface)
 private val colorOnSurfaceVariant = ColorProvider(R.color.widget_on_surface_variant)
 private val colorError = ColorProvider(R.color.widget_error)
+private val colorWarning = ColorProvider(R.color.widget_warning)
 
 class AvgangWidget : GlanceAppWidget() {
 
@@ -65,13 +67,17 @@ private fun minutesLabel(timeStr: String): String {
 private fun WidgetContent(prefs: Preferences) {
     val nextTime = prefs[WidgetKeys.NEXT_TIME] ?: ""
     val nextNextTime = prefs[WidgetKeys.NEXT_NEXT_TIME] ?: ""
-    val favoriteName = prefs[WidgetKeys.FAVORITE_NAME] ?: ""
+    val nextDelay = prefs[WidgetKeys.NEXT_DELAY] ?: 0
+    val nextNextDelay = prefs[WidgetKeys.NEXT_NEXT_DELAY] ?: 0
+    val nextCancelled = prefs[WidgetKeys.NEXT_CANCELLED] ?: false
+    val nextNextCancelled = prefs[WidgetKeys.NEXT_NEXT_CANCELLED] ?: false
+    val favoriteName = (prefs[WidgetKeys.FAVORITE_NAME] ?: "").cleanStopName()
     val line = prefs[WidgetKeys.LINE] ?: ""
-    val direction = prefs[WidgetKeys.DIRECTION] ?: ""
+    val direction = (prefs[WidgetKeys.DIRECTION] ?: "").cleanStopName()
     val lastUpdated = prefs[WidgetKeys.LAST_UPDATED] ?: ""
     val error = prefs[WidgetKeys.ERROR]
     val autoModeActive = prefs[WidgetKeys.AUTO_MODE_ACTIVE] ?: false
-    val autoModeLabel = prefs[WidgetKeys.AUTO_MODE_LABEL] ?: ""
+    val autoModeLabel = (prefs[WidgetKeys.AUTO_MODE_LABEL] ?: "").cleanStopName()
     val favoriteCount = prefs[WidgetKeys.FAVORITE_COUNT] ?: 1
 
     Box(
@@ -153,64 +159,82 @@ private fun WidgetContent(prefs: Preferences) {
                     Spacer(GlanceModifier.height(2.dp))
                 }
 
-                // Rad 1 — linje → riktning (liten text)
-                val lineRow = buildString {
-                    if (line.isNotEmpty()) append("Linje $line")
-                    if (direction.isNotEmpty()) {
-                        if (line.isNotEmpty()) append(" → ") else append("→ ")
-                        append(direction)
+                // Rad 1 — favorit-namn (visas bara när nav-raden inte är aktiv)
+                if (favoriteCount <= 1 || autoModeActive) {
+                    val nameLabel = if (autoModeActive && autoModeLabel.isNotEmpty()) autoModeLabel else favoriteName
+                    if (nameLabel.isNotEmpty()) {
+                        Text(
+                            text = nameLabel,
+                            style = TextStyle(
+                                color = colorOnSurface,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        )
+                        Spacer(GlanceModifier.height(2.dp))
                     }
                 }
-                if (lineRow.isNotEmpty()) {
-                    Text(
-                        text = lineRow,
-                        style = TextStyle(
-                            color = colorOnSurfaceVariant,
-                            fontSize = 11.sp
-                        )
-                    )
-                    Spacer(GlanceModifier.height(2.dp))
-                }
 
-                // Rad 2 — Nästa (stor text + minuter kvar)
+                // Rad 2 — Nästa (stor text + status)
                 Row(verticalAlignment = Alignment.Vertical.CenterVertically) {
+                    val nextDisplayTime = if (nextCancelled) "--:--"
+                                         else if (nextTime.isNotEmpty()) nextTime else "--:--"
                     Text(
-                        text = if (nextTime.isNotEmpty()) "Nästa: $nextTime" else "Nästa: --:--",
+                        text = "Nästa: $nextDisplayTime",
                         style = TextStyle(
-                            color = colorOnSurface,
+                            color = if (nextCancelled) colorError else colorOnSurface,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
                     )
-                    val nextLabel = minutesLabel(nextTime)
-                    if (nextLabel.isNotEmpty()) {
+                    val nextStatusLabel = when {
+                        nextCancelled   -> "❌ Inställd"
+                        nextDelay >= 2  -> "⚠️ +${nextDelay} min"
+                        else            -> minutesLabel(nextTime)
+                    }
+                    if (nextStatusLabel.isNotEmpty()) {
                         Spacer(GlanceModifier.width(8.dp))
                         Text(
-                            text = nextLabel,
+                            text = nextStatusLabel,
                             style = TextStyle(
-                                color = colorOnSurfaceVariant,
+                                color = when {
+                                    nextCancelled  -> colorError
+                                    nextDelay >= 2 -> colorWarning
+                                    else           -> colorOnSurfaceVariant
+                                },
                                 fontSize = 14.sp
                             )
                         )
                     }
                 }
 
-                // Rad 3 — Sen (medelstor text + minuter kvar)
+                // Rad 3 — Sen (medelstor text + status)
                 Row(verticalAlignment = Alignment.Vertical.CenterVertically) {
+                    val nextNextDisplayTime = if (nextNextCancelled) "--:--"
+                                             else if (nextNextTime.isNotEmpty()) nextNextTime else ""
                     Text(
-                        text = if (nextNextTime.isNotEmpty()) "Sen: $nextNextTime" else "Sen: Ingen fler",
+                        text = if (nextNextDisplayTime.isNotEmpty()) "Sen: $nextNextDisplayTime" else "Sen: Ingen fler",
                         style = TextStyle(
-                            color = colorOnSurface,
+                            color = if (nextNextCancelled) colorError else colorOnSurface,
                             fontSize = 16.sp
                         )
                     )
-                    val nextNextLabel = minutesLabel(nextNextTime)
-                    if (nextNextLabel.isNotEmpty()) {
+                    val nextNextStatusLabel = when {
+                        nextNextCancelled   -> "❌ Inställd"
+                        nextNextDelay >= 2  -> "⚠️ +${nextNextDelay} min"
+                        nextNextTime.isNotEmpty() -> minutesLabel(nextNextTime)
+                        else                -> ""
+                    }
+                    if (nextNextStatusLabel.isNotEmpty()) {
                         Spacer(GlanceModifier.width(8.dp))
                         Text(
-                            text = nextNextLabel,
+                            text = nextNextStatusLabel,
                             style = TextStyle(
-                                color = colorOnSurfaceVariant,
+                                color = when {
+                                    nextNextCancelled  -> colorError
+                                    nextNextDelay >= 2 -> colorWarning
+                                    else               -> colorOnSurfaceVariant
+                                },
                                 fontSize = 13.sp
                             )
                         )
@@ -224,14 +248,7 @@ private fun WidgetContent(prefs: Preferences) {
                     modifier = GlanceModifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
-                    val footerText = buildString {
-                        if (autoModeActive && autoModeLabel.isNotEmpty()) {
-                            append("Läge: $autoModeLabel")
-                        } else if (favoriteName.isNotEmpty()) {
-                            append(favoriteName)
-                        }
-                        if (lastUpdated.isNotEmpty()) append(" • Uppdaterad $lastUpdated")
-                    }
+                    val footerText = if (lastUpdated.isNotEmpty()) "Uppdaterad $lastUpdated" else ""
                     Text(
                         text = footerText,
                         style = TextStyle(

@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -48,6 +49,22 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/avgang_widget_info" />
+        </receiver>
+
+        <!-- AlarmManager-based backup scheduler (harder for Samsung to kill) -->
+        <receiver
+            android:name=".widget.WidgetAlarmReceiver"
+            android:exported="false" />
+
+        <!-- Reschedules AlarmManager and WorkManager after device reboot -->
+        <receiver
+            android:name=".widget.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.sec.android.emergencylauncher.action.EMERGENCYMODE_CHANGED" />
+            </intent-filter>
         </receiver>
 
     </application>

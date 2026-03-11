@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.work.*
 import com.example.avgngsthlm.ui.navigation.AppNavigation
 import com.example.avgngsthlm.ui.theme.AvgångSthlmTheme
+import com.example.avgngsthlm.widget.WidgetAlarmReceiver
 import com.example.avgngsthlm.worker.WidgetUpdateWorker
 import java.util.concurrent.TimeUnit
 
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         Log.d("API", "BASE_URL = ${BuildConfig.BACKEND_URL}")
         scheduleWidgetUpdates()
+        WidgetAlarmReceiver.scheduleAlarm(this)
         triggerImmediateUpdate()
         enableEdgeToEdge()
         setContent {

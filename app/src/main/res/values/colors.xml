@@ -13,4 +13,5 @@
     <color name="widget_on_surface">#FF1C1B1F</color>
     <color name="widget_on_surface_variant">#FF49454F</color>
     <color name="widget_error">#FFB3261E</color>
+    <color name="widget_warning">#FFE65100</color>
 </resources>

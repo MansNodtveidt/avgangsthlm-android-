@@ -32,14 +32,23 @@ fun AddFavoriteScreen(
 ) {
     val state by vm.uiState.collectAsState()
     val stopQuery by vm.stopQuery.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.saved) {
         if (state.saved) onBack()
     }
 
+    LaunchedEffect(state.isAtLimit) {
+        if (state.isAtLimit) {
+            snackbarHostState.showSnackbar("Du kan max ha 5 favoriter. Ta bort en för att lägga till ny.")
+            onBack()
+        }
+    }
+
     BackHandler(enabled = !vm.isFirstStep()) { vm.goBack() }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Ny favorit") },

@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.avgngsthlm.data.local.entity.Favorite
+import com.example.avgngsthlm.util.cleanStopName
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,8 +43,22 @@ fun FavoritesScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddFavorite) {
-                Icon(Icons.Default.Add, contentDescription = "Lägg till favorit")
+            if (favorites.size < 5) {
+                FloatingActionButton(onClick = onAddFavorite) {
+                    Icon(Icons.Default.Add, contentDescription = "Lägg till favorit")
+                }
+            } else {
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    Text(
+                        text = "Max 5 favoriter",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    )
+                }
             }
         }
     ) { padding ->
@@ -140,7 +155,7 @@ private fun FavoriteItem(
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = favorite.stopName,
+                    text = favorite.stopName.cleanStopName(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

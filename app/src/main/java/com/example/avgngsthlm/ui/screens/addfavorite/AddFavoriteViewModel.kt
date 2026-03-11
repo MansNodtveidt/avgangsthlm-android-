@@ -41,7 +41,8 @@ data class AddFavoriteUiState(
     // Gemensamt
     val error: String? = null,
     val isSaving: Boolean = false,
-    val saved: Boolean = false
+    val saved: Boolean = false,
+    val isAtLimit: Boolean = false
 ) {
     val stepNumber: Int get() = step.ordinal + 1
     val totalSteps: Int get() = 4
@@ -63,6 +64,11 @@ class AddFavoriteViewModel(app: Application) : AndroidViewModel(app) {
     private var cachedDepartures: List<Departure> = emptyList()
 
     init {
+        viewModelScope.launch {
+            if (favoriteRepo.getCount() >= 5) {
+                _uiState.update { it.copy(isAtLimit = true) }
+            }
+        }
         viewModelScope.launch {
             _stopQuery
                 .debounce(350)
@@ -193,6 +199,10 @@ class AddFavoriteViewModel(app: Application) : AndroidViewModel(app) {
         }
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true, error = null) }
+            if (favoriteRepo.getCount() >= 5) {
+                _uiState.update { it.copy(isSaving = false, isAtLimit = true) }
+                return@launch
+            }
             favoriteRepo.insert(
                 Favorite(
                     name = state.favoriteName.trim(),

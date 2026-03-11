@@ -146,6 +146,15 @@ fun HelpScreen(onBack: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
+                    TextButton(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW,
+                                Uri.parse("https://www.termsfeed.com/live/7d2eb7a2-1852-4594-b4d9-475501006f21"))
+                            context.startActivity(intent)
+                        }
+                    ) {
+                        Text("Integritetspolicy")
+                    }
                 }
             }
 

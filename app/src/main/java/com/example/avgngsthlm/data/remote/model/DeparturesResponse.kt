@@ -13,12 +13,14 @@ data class Departure(
     @SerializedName("transportNumber") val transportNumber: String? = null,
     @SerializedName("stop") val stop: String = "",
     @SerializedName("stopid") val stopId: String = "",
-    @SerializedName("time") val time: String = "",       // "12:53:00"
+    @SerializedName("time") val time: String = "",       // scheduled "HH:MM:SS"
     @SerializedName("date") val date: String = "",
+    @SerializedName("rtTime") val rtTime: String? = null, // realtime "HH:MM:SS", null if on schedule
+    @SerializedName("rtDate") val rtDate: String? = null,
+    @SerializedName("cancelled") val cancelled: Boolean = false,
     @SerializedName("direction") val direction: String? = null,
     @SerializedName("Product") val products: List<Product>? = null
 ) {
-    // Returnera tid som "HH:MM"
     fun formattedTime(): String = if (time.length >= 5) time.substring(0, 5) else time
 }
 

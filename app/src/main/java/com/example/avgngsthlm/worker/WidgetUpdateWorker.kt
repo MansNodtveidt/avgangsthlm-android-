@@ -18,8 +18,8 @@ import com.example.avgngsthlm.data.AppSettings
 import com.example.avgngsthlm.data.local.db.AppDatabase
 import com.example.avgngsthlm.data.local.entity.Favorite
 import com.example.avgngsthlm.data.repository.AutoRuleRepository
-import com.example.avgngsthlm.data.repository.DeparturesRepository
 import com.example.avgngsthlm.data.repository.FavoriteRepository
+import com.example.avgngsthlm.data.repository.SLTransportRepository
 import com.example.avgngsthlm.util.AutoModeHelper
 import com.example.avgngsthlm.widget.AvgangWidget
 import com.example.avgngsthlm.widget.WidgetKeys
@@ -42,7 +42,7 @@ class WidgetUpdateWorker(
     private val db = AppDatabase.getInstance(context)
     private val favoriteRepo = FavoriteRepository(db.favoriteDao())
     private val ruleRepo = AutoRuleRepository(db.autoRuleDao())
-    private val departuresRepo = DeparturesRepository()
+    private val slTransportRepo = SLTransportRepository()
 
     /**
      * Required for WorkManager to promote this worker to a foreground service
@@ -137,34 +137,36 @@ class WidgetUpdateWorker(
         val autoEnabled = AppSettings.isAutoModeEnabled(context)
         val now = AutoModeHelper.currentTimeString()
 
-        Log.d(TAG, "fetchAndUpdateWidget: GET departureBoard siteId=${favorite.siteId}")
+        Log.d(TAG, "fetchAndUpdateWidget: GET SL Transport departures for '${favorite.name}'")
 
-        departuresRepo.getDepartures(
-            siteId = favorite.siteId,
-            lineFilter = favorite.lineFilter,
-            directionFilter = favorite.directionFilter
-        ).onSuccess { departures ->
+        slTransportRepo.getDepartures(favorite).onSuccess { departures ->
             Log.d(TAG, "fetchAndUpdateWidget: success — ${departures.size} departures")
             if (departures.isEmpty()) {
                 Log.w(TAG, "fetchAndUpdateWidget: 0 departures after filtering (line=${favorite.lineFilter} dir=${favorite.directionFilter})")
                 updateWidgetError("Inga avgångar", "Inga fler avgångar idag")
                 return@onSuccess
             }
+            val next     = departures.getOrNull(0)
+            val nextNext = departures.getOrNull(1)
             val glanceIds = GlanceAppWidgetManager(context).getGlanceIds(AvgangWidget::class.java)
             Log.d(TAG, "fetchAndUpdateWidget: updating ${glanceIds.size} widget instance(s)")
             glanceIds.forEach { glanceId ->
                 updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { prefs ->
                     prefs.toMutablePreferences().apply {
-                        this[WidgetKeys.NEXT_TIME] = departures.getOrNull(0)?.formattedTime() ?: ""
-                        this[WidgetKeys.NEXT_NEXT_TIME] = departures.getOrNull(1)?.formattedTime() ?: ""
-                        this[WidgetKeys.FAVORITE_NAME] = favorite.name
-                        this[WidgetKeys.STOP_NAME] = favorite.stopName
-                        this[WidgetKeys.LINE] = favorite.lineFilter ?: ""
-                        this[WidgetKeys.DIRECTION] = favorite.directionFilter ?: ""
-                        this[WidgetKeys.LAST_UPDATED] = now
-                        this[WidgetKeys.AUTO_MODE_ACTIVE] = autoEnabled
-                        this[WidgetKeys.AUTO_MODE_LABEL] = if (autoEnabled) activeRuleName.ifEmpty { favorite.name } else ""
-                        this[WidgetKeys.FAVORITE_COUNT] = favoritesCount
+                        this[WidgetKeys.NEXT_TIME]           = next?.clockTime ?: ""
+                        this[WidgetKeys.NEXT_NEXT_TIME]      = nextNext?.clockTime ?: ""
+                        this[WidgetKeys.NEXT_DELAY]          = next?.delayMinutes?.toInt() ?: 0
+                        this[WidgetKeys.NEXT_NEXT_DELAY]     = nextNext?.delayMinutes?.toInt() ?: 0
+                        this[WidgetKeys.NEXT_CANCELLED]      = next?.isCancelled ?: false
+                        this[WidgetKeys.NEXT_NEXT_CANCELLED] = nextNext?.isCancelled ?: false
+                        this[WidgetKeys.FAVORITE_NAME]       = favorite.name
+                        this[WidgetKeys.STOP_NAME]           = favorite.stopName
+                        this[WidgetKeys.LINE]                = favorite.lineFilter ?: ""
+                        this[WidgetKeys.DIRECTION]           = favorite.directionFilter ?: ""
+                        this[WidgetKeys.LAST_UPDATED]        = now
+                        this[WidgetKeys.AUTO_MODE_ACTIVE]    = autoEnabled
+                        this[WidgetKeys.AUTO_MODE_LABEL]     = if (autoEnabled) activeRuleName.ifEmpty { favorite.name } else ""
+                        this[WidgetKeys.FAVORITE_COUNT]      = favoritesCount
                         remove(WidgetKeys.ERROR)
                     }
                 }

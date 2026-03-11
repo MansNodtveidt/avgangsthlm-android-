@@ -2,9 +2,9 @@ package com.example.avgngsthlm.ui.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Widgets
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,7 +21,7 @@ sealed class Screen(val route: String) {
         fun createRoute(id: Int) = "edit_favorite/$id"
     }
     object AutoMode : Screen("auto_mode")
-    object WidgetPreview : Screen("widget_preview")
+    object Departures : Screen("departures")
     object Help : Screen("help")
 }
 
@@ -38,9 +38,9 @@ fun AppNavigation() {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val bottomNavItems = listOf(
-        BottomNavItem(Screen.Favorites, "Favoriter", Icons.Default.Home),
-        BottomNavItem(Screen.AutoMode, "Auto mode", Icons.Default.Schedule),
-        BottomNavItem(Screen.WidgetPreview, "Widget", Icons.Default.Widgets)
+        BottomNavItem(Screen.Departures, "Avgångar", Icons.Default.Home),
+        BottomNavItem(Screen.Favorites, "Favoriter", Icons.Default.Star),
+        BottomNavItem(Screen.AutoMode, "Auto mode", Icons.Default.AccessTime)
     )
 
     val showBottomBar = currentRoute in bottomNavItems.map { it.screen.route }
@@ -61,8 +61,7 @@ fun AppNavigation() {
                                     restoreState = true
                                 }
                             },
-                            icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) }
+                            icon = { Icon(item.icon, contentDescription = item.label) }
                         )
                     }
                 }
@@ -71,7 +70,7 @@ fun AppNavigation() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Favorites.route,
+            startDestination = Screen.Departures.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Favorites.route) {
@@ -97,8 +96,8 @@ fun AppNavigation() {
             composable(Screen.AutoMode.route) {
                 com.example.avgngsthlm.ui.screens.automode.AutoModeScreen()
             }
-            composable(Screen.WidgetPreview.route) {
-                com.example.avgngsthlm.ui.screens.widgetpreview.WidgetPreviewScreen()
+            composable(Screen.Departures.route) {
+                com.example.avgngsthlm.ui.screens.departures.DeparturesScreen()
             }
             composable(Screen.Help.route) {
                 com.example.avgngsthlm.ui.screens.help.HelpScreen(

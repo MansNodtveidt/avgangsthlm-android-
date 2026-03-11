@@ -53,4 +53,14 @@ object RetrofitClient {
             .build()
             .create(SLApiService::class.java)
     }
+
+    /** SL Transport – realtidsavgångar */
+    val slTransportService: SLTransportService by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://transport.integration.sl.se/v1/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(SLTransportService::class.java)
+    }
 }

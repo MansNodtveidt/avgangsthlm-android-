@@ -15,4 +15,10 @@ class FavoriteRepository(private val dao: FavoriteDao) {
     suspend fun delete(favorite: Favorite) = dao.delete(favorite)
 
     suspend fun update(favorite: Favorite) = dao.update(favorite)
+
+    suspend fun getCount(): Int = dao.getCount()
+
+    suspend fun updateSlSiteId(id: Int, slSiteId: String) = dao.updateSlSiteId(id, slSiteId)
+
+    suspend fun resetAllSlSiteIds() = dao.resetAllSlSiteIds()
 }

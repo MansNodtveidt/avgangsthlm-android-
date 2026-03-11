@@ -20,4 +20,13 @@ interface FavoriteDao {
 
     @Update
     suspend fun update(favorite: Favorite)
+
+    @Query("SELECT COUNT(*) FROM favorites")
+    suspend fun getCount(): Int
+
+    @Query("UPDATE favorites SET slSiteId = :slSiteId WHERE id = :id")
+    suspend fun updateSlSiteId(id: Int, slSiteId: String)
+
+    @Query("UPDATE favorites SET slSiteId = NULL")
+    suspend fun resetAllSlSiteIds()
 }

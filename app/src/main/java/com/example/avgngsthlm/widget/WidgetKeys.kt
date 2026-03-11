@@ -7,6 +7,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 object WidgetKeys {
     val NEXT_TIME = stringPreferencesKey("w_next_time")
     val NEXT_NEXT_TIME = stringPreferencesKey("w_next_next_time")
+    val NEXT_DELAY = intPreferencesKey("w_next_delay")
+    val NEXT_NEXT_DELAY = intPreferencesKey("w_next_next_delay")
+    val NEXT_CANCELLED = booleanPreferencesKey("w_next_cancelled")
+    val NEXT_NEXT_CANCELLED = booleanPreferencesKey("w_next_next_cancelled")
     val STOP_NAME = stringPreferencesKey("w_stop_name")
     val FAVORITE_NAME = stringPreferencesKey("w_favorite_name")
     val LINE = stringPreferencesKey("w_line")

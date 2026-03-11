@@ -10,5 +10,6 @@ data class Favorite(
     val siteId: String,
     val stopName: String,
     val lineFilter: String? = null,
-    val directionFilter: String? = null
+    val directionFilter: String? = null,
+    val slSiteId: String? = null
 )
